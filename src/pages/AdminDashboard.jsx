@@ -47,6 +47,12 @@ export default function AdminDashboard({ onLogout }) {
     title: '', reel_url: '', thumbnail_url: '', caption: '', display_order: 1
   });
 
+  // Member Modal / Form state
+  const [editingMember, setEditingMember] = useState(null);
+  const [memberForm, setMemberForm] = useState({
+    name: '', role: '', image_url: '', bio: '', display_order: 1
+  });
+
   // Check auth and load all data
   useEffect(() => {
     loadAdminData();
@@ -197,6 +203,59 @@ export default function AdminDashboard({ onLogout }) {
           showToast('Reel deleted successfully!');
         } catch (err) {
           showToast('Failed to delete reel: ' + (err.response?.data?.error || err.message), true);
+        } finally {
+          setConfirmModal(null);
+        }
+      }
+    });
+  };
+
+  // DUO MEMBER HANDLERS
+  const handleOpenAddMember = () => {
+    setEditingMember({});
+    setMemberForm({ name: '', role: '', image_url: '', bio: '', display_order: 1 });
+  };
+
+  const handleOpenEditMember = (member) => {
+    setEditingMember(member);
+    setMemberForm({
+      name: member.name || '',
+      role: member.role || '',
+      image_url: member.image_url || '',
+      bio: member.bio || '',
+      display_order: member.display_order || 1
+    });
+  };
+
+  const handleSaveMember = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingMember && editingMember.id) {
+        await updateMember(editingMember.id, memberForm);
+        showToast('Duo Member updated successfully!');
+      } else {
+        await createMember(memberForm);
+        showToast('New Duo Member added!');
+      }
+      const updated = await getMembers();
+      setMembers(updated.data || []);
+      setEditingMember(null);
+    } catch (err) {
+      showToast('Error saving member: ' + (err.response?.data?.error || err.message), true);
+    }
+  };
+
+  const promptDeleteMember = (id, name) => {
+    setConfirmModal({
+      title: 'Delete Duo Member',
+      message: `Are you sure you want to delete member "${name}"?`,
+      onConfirm: async () => {
+        try {
+          await deleteMember(id);
+          setMembers(prev => prev.filter(m => m.id !== id));
+          showToast('Member deleted successfully!');
+        } catch (err) {
+          showToast('Failed to delete member: ' + (err.response?.data?.error || err.message), true);
         } finally {
           setConfirmModal(null);
         }
@@ -400,6 +459,16 @@ export default function AdminDashboard({ onLogout }) {
             </button>
 
             <button
+              onClick={() => setActiveTab('members')}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 shrink-0 transition-all cursor-pointer ${
+                activeTab === 'members' ? 'bg-brand-red text-white shadow-glow-red' : 'bg-dark-900 border border-white/10 text-gray-400 hover:text-white'
+              }`}
+            >
+              <Users size={15} />
+              <span>Duo Members ({members.length})</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('lyrics')}
               className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 shrink-0 transition-all cursor-pointer ${
                 activeTab === 'lyrics' ? 'bg-brand-red text-white shadow-glow-red' : 'bg-dark-900 border border-white/10 text-gray-400 hover:text-white'
@@ -540,6 +609,63 @@ export default function AdminDashboard({ onLogout }) {
                       </button>
                       <button
                         onClick={() => promptDeleteReel(reel.id, reel.title)}
+                        className="w-full py-2 bg-red-950 hover:bg-brand-red text-red-300 hover:text-white border border-red-500/30 rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                      >
+                        <Trash2 size={14} /> Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: DUO MEMBERS MANAGEMENT */}
+          {activeTab === 'members' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-xl font-bold font-heading uppercase text-white">Manage Duo Members</h3>
+                  <p className="text-xs text-gray-400">Update pictures, role titles, and descriptions for the duo members.</p>
+                </div>
+                <button
+                  onClick={handleOpenAddMember}
+                  className="px-4 py-2 bg-brand-red hover:bg-red-600 text-white rounded-xl text-xs font-bold uppercase flex items-center gap-1.5 shadow-glow-red cursor-pointer"
+                >
+                  <Plus size={16} /> Add Member
+                </button>
+              </div>
+
+              {/* Members Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {members.map(member => (
+                  <div key={member.id} className="p-5 bg-dark-900 border border-white/10 rounded-2xl flex flex-col justify-between space-y-4">
+                    <div className="flex items-start gap-4">
+                      <img
+                        src={member.image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80'}
+                        alt={member.name}
+                        className="w-24 h-24 object-cover rounded-2xl shrink-0 border border-white/10 shadow-md"
+                      />
+                      <div className="min-w-0 space-y-1">
+                        <h4 className="font-bold text-white text-lg truncate">{member.name}</h4>
+                        <span className="inline-block px-2.5 py-0.5 bg-brand-red/20 border border-brand-red/40 text-brand-red text-xs font-bold uppercase rounded-md">
+                          {member.role}
+                        </span>
+                        <p className="text-xs text-gray-300 line-clamp-3 leading-relaxed pt-1">
+                          {member.bio}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/10">
+                      <button
+                        onClick={() => handleOpenEditMember(member)}
+                        className="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                      >
+                        <Edit3 size={14} /> Edit Profile
+                      </button>
+                      <button
+                        onClick={() => promptDeleteMember(member.id, member.name)}
                         className="w-full py-2 bg-red-950 hover:bg-brand-red text-red-300 hover:text-white border border-red-500/30 rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-1 cursor-pointer transition-colors"
                       >
                         <Trash2 size={14} /> Delete
@@ -938,6 +1064,75 @@ export default function AdminDashboard({ onLogout }) {
               <div className="flex justify-end gap-3 pt-3 border-t border-white/10">
                 <button type="button" onClick={() => setEditingReel(null)} className="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-xs font-bold uppercase cursor-pointer">Cancel</button>
                 <button type="submit" className="px-6 py-2.5 bg-brand-red hover:bg-red-600 text-white rounded-xl text-xs font-bold uppercase shadow-glow-red cursor-pointer">Save Reel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* CUSTOM EDIT / CREATE DUO MEMBER POPUP MODAL */}
+      {editingMember !== null && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-dark-900 border border-brand-red/50 p-6 sm:p-8 rounded-3xl space-y-5 shadow-2xl max-w-xl w-full my-8">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <h4 className="font-bold font-heading text-white uppercase text-lg flex items-center gap-2">
+                <Users size={20} className="text-brand-red" />
+                <span>{editingMember.id ? `Edit Member: ${editingMember.name}` : 'Add New Duo Member'}</span>
+              </h4>
+              <button onClick={() => setEditingMember(null)} className="p-1 text-gray-400 hover:text-white cursor-pointer">
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveMember} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[11px] font-bold text-gray-300 uppercase block mb-1">Member Name *</label>
+                  <input
+                    type="text" placeholder="e.g. Member Name"
+                    value={memberForm.name} onChange={e => setMemberForm({...memberForm, name: e.target.value})}
+                    required className="w-full px-4 py-2.5 bg-dark-950 border border-white/15 rounded-xl text-sm text-white focus:border-brand-red"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-gray-300 uppercase block mb-1">Role / Designation *</label>
+                  <input
+                    type="text" placeholder="e.g. Vocals & Songwriter or Producer"
+                    value={memberForm.role} onChange={e => setMemberForm({...memberForm, role: e.target.value})}
+                    required className="w-full px-4 py-2.5 bg-dark-950 border border-white/15 rounded-xl text-sm text-white focus:border-brand-red"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-gray-300 uppercase block mb-1">Picture / Photo Image URL *</label>
+                <input
+                  type="text" placeholder="https://images.unsplash.com/photo-... or image URL"
+                  value={memberForm.image_url} onChange={e => setMemberForm({...memberForm, image_url: e.target.value})}
+                  required className="w-full px-4 py-2.5 bg-dark-950 border border-white/15 rounded-xl text-sm text-white focus:border-brand-red"
+                />
+                {memberForm.image_url && (
+                  <div className="mt-2 flex items-center gap-3">
+                    <span className="text-[10px] text-gray-400 uppercase font-mono">Image Preview:</span>
+                    <img src={memberForm.image_url} alt="Preview" className="w-12 h-12 rounded-xl object-cover border border-white/10" />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-gray-300 uppercase block mb-1">Bio / Description *</label>
+                <textarea
+                  rows={4}
+                  placeholder="Describe this member's journey, vocal style, beats, or contribution..."
+                  value={memberForm.bio} onChange={e => setMemberForm({...memberForm, bio: e.target.value})}
+                  required className="w-full px-4 py-2.5 bg-dark-950 border border-white/15 rounded-xl text-sm text-white focus:border-brand-red font-sans"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-white/10">
+                <button type="button" onClick={() => setEditingMember(null)} className="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-xs font-bold uppercase cursor-pointer">Cancel</button>
+                <button type="submit" className="px-6 py-2.5 bg-brand-red hover:bg-red-600 text-white rounded-xl text-xs font-bold uppercase shadow-glow-red cursor-pointer">Save Member</button>
               </div>
             </form>
           </div>

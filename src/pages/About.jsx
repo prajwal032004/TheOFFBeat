@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMembers } from '../services/api';
 import PageTransition from '../components/PageTransition';
-import { Instagram, Youtube, ArrowRight, Mic2, Disc, Sliders } from 'lucide-react';
+import { ArrowRight, Mic2, Disc, Sliders } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function About({ settings }) {
@@ -134,30 +134,6 @@ export default function About({ settings }) {
                     <p className="text-gray-400 text-sm leading-relaxed mt-3">
                       {member.bio}
                     </p>
-                  </div>
-
-                  {/* Member Social Links (Instagram & YouTube Only) */}
-                  <div className="flex items-center gap-3 pt-6 border-t border-white/10">
-                    <a
-                      href={instagramUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-2.5 bg-white/[0.05] border border-white/10 rounded-full hover:bg-brand-red hover:text-white text-gray-300 transition-all"
-                      aria-label="Instagram"
-                      title="Follow on Instagram"
-                    >
-                      <Instagram size={18} />
-                    </a>
-                    <a
-                      href={youtubeUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-2.5 bg-white/[0.05] border border-white/10 rounded-full hover:bg-brand-red hover:text-white text-gray-300 transition-all"
-                      aria-label="YouTube"
-                      title="Subscribe on YouTube"
-                    >
-                      <Youtube size={18} />
-                    </a>
                   </div>
                 </div>
               </motion.div>
