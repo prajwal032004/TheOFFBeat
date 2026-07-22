@@ -8,9 +8,9 @@ const DEFAULT_FALLBACK_SONGS = [
     title: 'EK TAAREEF',
     release_type: 'Romantic Song 💖',
     duration: '3:15',
-    thumbnail_url: 'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
-    youtube_url: 'https://www.youtube.com/@theoffbeat_original',
-    youtube_embed_id: 'dQw4w9WgXcQ',
+    thumbnail_url: 'https://img.youtube.com/vi/jhJcu7fMmCM/hqdefault.jpg',
+    youtube_url: 'https://youtu.be/jhJcu7fMmCM',
+    youtube_embed_id: 'jhJcu7fMmCM',
     description: "TheOFFBeat's latest romantic release 'EK Taareef'. A heartwarming melody built around soulful acoustic textures and emotional storytelling.",
     is_latest: true
   },

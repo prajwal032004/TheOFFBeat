@@ -45,17 +45,16 @@ export default function SongComments({ songId, songTitle }) {
         content: content.trim()
       });
 
-      if (res.data && res.data.comment) {
-        setComments([res.data.comment, ...comments]);
+      if (res.data) {
         setContent('');
-        setSuccessMsg('Comment posted successfully!');
-        setTimeout(() => setSuccessMsg(''), 3000);
+        setSuccessMsg(res.data.message || 'Comment submitted! It will appear once approved by Admin.');
+        setTimeout(() => setSuccessMsg(''), 4500);
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
         setVulgarError(err.response.data.error);
       } else {
-        setVulgarError('Failed to post comment. Please try again.');
+        setVulgarError('Failed to submit comment. Please try again.');
       }
     } finally {
       setSubmitting(false);
@@ -83,7 +82,7 @@ export default function SongComments({ songId, songTitle }) {
             transition={{ duration: 0.3 }}
             className="mt-4 space-y-4 overflow-hidden"
           >
-            {/* Vulgarity Warning Banner */}
+            {/* Error Banner */}
             {vulgarError && (
               <motion.div
                 initial={{ opacity: 0, y: -6 }}
@@ -92,7 +91,6 @@ export default function SongComments({ songId, songTitle }) {
               >
                 <AlertTriangle size={16} className="text-red-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold block uppercase tracking-wide">Vulgarity Detected</span>
                   <p>{vulgarError}</p>
                 </div>
               </motion.div>
@@ -105,7 +103,7 @@ export default function SongComments({ songId, songTitle }) {
                 animate={{ opacity: 1, y: 0 }}
                 className="p-2.5 bg-emerald-950/80 border border-emerald-500/50 rounded-xl text-emerald-300 text-xs flex items-center gap-2"
               >
-                <ShieldCheck size={16} className="text-emerald-400" />
+                <ShieldCheck size={16} className="text-emerald-400 shrink-0" />
                 <span>{successMsg}</span>
               </motion.div>
             )}
@@ -127,7 +125,7 @@ export default function SongComments({ songId, songTitle }) {
               <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  placeholder="Add a respectful comment..."
+                  placeholder="Add a comment..."
                   value={content}
                   onChange={(e) => {
                     setContent(e.target.value);
@@ -145,7 +143,7 @@ export default function SongComments({ songId, songTitle }) {
                   <span>Post</span>
                 </button>
               </div>
-              <p className="text-[10px] text-gray-500 italic">Automated moderation active. Inappropriate comments will be blocked.</p>
+              <p className="text-[10px] text-gray-500 italic">Comments will be visible after Admin review & approval.</p>
             </form>
 
             {/* Comment List */}
