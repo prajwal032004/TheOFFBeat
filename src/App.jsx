@@ -13,7 +13,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import NotFound from './pages/NotFound';
 import ChatbotWidget from './components/ChatbotWidget';
 import VideoModal from './components/VideoModal';
-import { getSettings } from './services/api';
+import { getSettings, trackPageView } from './services/api';
 
 export default function App() {
   const [settings, setSettings] = useState({});
@@ -32,7 +32,15 @@ export default function App() {
     loadSettings();
   }, []);
 
+  // Track page views for non-admin pages
+  useEffect(() => {
+    if (!location.pathname.startsWith('/admin')) {
+      trackPageView(location.pathname);
+    }
+  }, [location.pathname]);
+
   const isAdminRoute = location.pathname.startsWith('/admin/offbeat');
+
 
   const handleChatbotPlaySong = (song) => {
     if (song) {

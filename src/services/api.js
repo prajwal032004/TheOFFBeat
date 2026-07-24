@@ -74,7 +74,25 @@ export const getAllLyricsAdmin = () => api.get('/lyrics/admin/all');
 export const updateLyricStatus = (id, data) => api.put(`/lyrics/${id}/status`, data);
 export const deleteLyricSubmission = (id) => api.delete(`/lyrics/${id}`);
 
+// Analytics Endpoints
+export const trackPageView = (path) => {
+  const visitor_hash = localStorage.getItem('offbeat_device_id') || Math.random().toString(36).substring(2, 15);
+  localStorage.setItem('offbeat_device_id', visitor_hash);
+  const isMobile = window.innerWidth <= 768;
+  const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+  const device_type = isMobile ? 'Mobile' : (isTablet ? 'Tablet' : 'Desktop');
+  
+  return api.post('/analytics/track', {
+    path: path || window.location.pathname,
+    device_type,
+    visitor_hash
+  }).catch(() => {});
+};
+
+export const getAdminAnalytics = () => api.get('/analytics/overview');
+
 export default api;
+
 
 
 
