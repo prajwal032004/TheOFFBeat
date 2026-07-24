@@ -6,7 +6,6 @@ export default function Footer({ settings }) {
   const [copied, setCopied] = React.useState(false);
   const instagramUrl = settings?.instagram_url || "https://www.instagram.com/theoffbeat_original?utm_source=qr";
   const youtubeUrl = settings?.youtube_url || "https://www.youtube.com/@theoffbeat_original";
-  const bookingEmail = "management@theoffbeat.com";
 
   const handleCopyEmail = (e) => {
     e.preventDefault();
@@ -102,10 +101,10 @@ export default function Footer({ settings }) {
               </p>
               <div className="flex items-center justify-between bg-black/60 p-3 rounded-xl border border-white/10">
                 <a
-                  href={`mailto:${bookingEmail}`}
+                  href={`mailto:${contactEmail}`}
                   className="text-sm font-bold font-mono text-white hover:text-brand-red transition-colors truncate"
                 >
-                  {bookingEmail}
+                  {contactEmail}
                 </a>
                 <button
                   onClick={handleCopyEmail}
