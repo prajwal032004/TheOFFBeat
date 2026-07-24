@@ -104,31 +104,31 @@ export default function About({ settings }) {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             {members.map((member) => (
               <motion.div
                 key={member.id}
                 whileHover={{ y: -8 }}
                 transition={{ duration: 0.3 }}
-                className="bg-dark-900/80 border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col group"
+                className="bg-dark-900/80 border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col group h-full"
               >
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-dark-950">
                   <img
                     src={member.image_url}
                     alt={member.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-90"
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700 filter brightness-95"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent" />
                   <div className="absolute bottom-4 left-6">
-                    <span className="px-3 py-1 bg-brand-red/90 text-white text-xs font-bold uppercase tracking-wider rounded-md">
+                    <span className="px-3 py-1 bg-brand-red/90 text-white text-xs font-bold uppercase tracking-wider rounded-md shadow-md">
                       {member.role}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-8 space-y-4 flex-grow flex flex-col justify-between">
+                <div className="p-6 sm:p-8 space-y-4 flex-grow flex flex-col justify-between">
                   <div>
-                    <h3 className="text-2xl font-bold font-heading uppercase text-white group-hover:text-brand-red transition-colors">
+                    <h3 className="text-xl sm:text-2xl font-bold font-heading uppercase text-white group-hover:text-brand-red transition-colors">
                       {member.name}
                     </h3>
                     <p className="text-gray-400 text-sm leading-relaxed mt-3">
