@@ -6,10 +6,11 @@ export default function Footer({ settings }) {
   const [copied, setCopied] = React.useState(false);
   const instagramUrl = settings?.instagram_url || "https://www.instagram.com/theoffbeat_original?utm_source=qr";
   const youtubeUrl = settings?.youtube_url || "https://www.youtube.com/@theoffbeat_original";
+  const contactEmail = settings?.contact_email || "management@theoffbeat.com";
 
   const handleCopyEmail = (e) => {
     e.preventDefault();
-    navigator.clipboard.writeText(bookingEmail);
+    navigator.clipboard.writeText(contactEmail);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -165,10 +166,10 @@ export default function Footer({ settings }) {
               Business Inquiries & Booking
             </span>
             <a
-              href={`mailto:${bookingEmail}`}
+              href={`mailto:${contactEmail}`}
               className="text-sm font-bold font-mono text-white block underline decoration-brand-red decoration-2"
             >
-              {bookingEmail}
+              {contactEmail}
             </a>
             <button
               onClick={handleCopyEmail}
